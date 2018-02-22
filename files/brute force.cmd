@@ -148,7 +148,7 @@ for /f "tokens=1* delims=:" %%d in (connectStatus) do (
 	)
 )
 echo.
-echo ===================================
+echo ==================================
 set /a num=%num%+1
 goto bruteforce
 :fim
