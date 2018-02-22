@@ -130,8 +130,9 @@ for /f "tokens=1* delims=:" %%d in (connectStatus) do (
 					goto allwifi
 				)
 				goto nadaencontrado
+			)
 		)
-		if %%m EQU desconectando (
+		if %%m EQU desconectado (
 			echo Acesso Negado
 			set senhaanterior=%senha%
 			if %senhaatual% EQU %senhaanterior% (
@@ -139,7 +140,7 @@ for /f "tokens=1* delims=:" %%d in (connectStatus) do (
 					goto allwifi
 				)
 				goto nadaencontrado
-		)
+			)
 		)else (
 			echo Acesso Permitido
 			goto fim
