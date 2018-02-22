@@ -12,7 +12,12 @@ echo.
 set /p bf="Na lista acima, escolha um numero do Wifi para ser hackeada: "
 for /f "tokens=1,2* delims=:" %%a in ('find "[%bf%]" u') do (
 	for /f "tokens=1* delims= " %%e in ("%%b") do (
-		set select=%%e %%f
+		if "%%f" EQU "" (
+			set select=%%e
+		)else (
+			set select=%%e %%f
+		)
+
 	)
 )
 
