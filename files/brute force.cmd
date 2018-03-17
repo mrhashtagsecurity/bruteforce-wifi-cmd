@@ -29,22 +29,20 @@ if %all% EQU "True" (
 	set /a bf=%bf%+1
 )
 for	/f "usebackq tokens=*" %%g in (`type o ^| find "SSID" ^| find /n ":"`) do (
-	for /f "usebackq tokens=1,2* delims=:" %%a in (`echo %%g ^| find "[%bf%]"`) do (
+	for /f "usebackq tokens=1* delims=:" %%a in (`echo {%%g{ ^| find "[%bf%]"`) do (
 		for /f "tokens=1* delims= " %%e in ("%%b") do (
 			if "%%f" EQU "" (
 				set select=%%e
 			)else (
-				for /f "tokens=1,2* delims= " %%m in ("%%f") do (
-					if "%%n" EQU "" (
-						set select=%%e %%m
-					)else (
-						set select=%%e %%m %%n
-					)
-				)
+				set select=%%e %%f
 			)
 
 		)
 	)
+)
+
+for /f "tokens=1* delims={" %%a in ("%select%") do (
+	set select=%%a
 )
 
 for	/f "usebackq tokens=*" %%g in (`type o ^| find "Autentica" ^| find /n ":"`) do (
@@ -77,6 +75,7 @@ for /f "tokens=* skip=%num%" %%a in (wordlist.txt) do (
 	goto continue
 )
 :continue
+
 echo ^<?xml version="1.0"?^> >"Wi-Fi-%select%.xml"
 echo ^<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1"^> >>"Wi-Fi-%select%.xml"
 echo 	^<name^>%select%^</name^> >>"Wi-Fi-%select%.xml"
